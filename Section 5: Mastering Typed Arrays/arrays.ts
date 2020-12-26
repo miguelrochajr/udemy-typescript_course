@@ -4,7 +4,7 @@ const dates = [new Date(), new Date()];
 const carsByMake: string[][] = [];
 
 // Help with inreference when extracting values
-const car = carMarkers[0];
+const carr = carMarkers[0];
 const myCar = carMarkers.pop();
 
 // Prevent incompatible values
