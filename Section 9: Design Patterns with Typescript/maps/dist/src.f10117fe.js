@@ -100435,7 +100435,12 @@ function () {
       lat: parseFloat(faker_1.default.address.latitude()),
       lng: parseFloat(faker_1.default.address.longitude())
     };
+    this.color = faker_1.default.commerce.color();
   }
+
+  User.prototype.markerContent = function () {
+    return "[User] name: " + this.name;
+  };
 
   return User;
 }();
@@ -100467,7 +100472,12 @@ function () {
       lat: parseFloat(faker_1.default.address.latitude()),
       lng: parseFloat(faker_1.default.address.longitude())
     };
+    this.color = faker_1.default.commerce.color();
   }
+
+  Company.prototype.markerContent = function () {
+    return "\n      <div>\n        <h1>[Company] name: " + this.name + "</h1>\n        <h3>Catchphrse: " + this.catchPhrase + "</h3>\n      </div>\n    ";
+  };
 
   return Company;
 }();
@@ -100496,13 +100506,21 @@ function () {
 
 
   CustomMap.prototype.addMarker = function (mappable) {
-    new google.maps.Marker({
+    var _this = this;
+
+    var marker = new google.maps.Marker({
       map: this.googleMap,
       position: {
         lat: mappable.location.lat,
         lng: mappable.location.lng
       },
       label: mappable.name
+    });
+    marker.addListener('click', function () {
+      var infoWindow = new google.maps.InfoWindow({
+        content: mappable.markerContent()
+      });
+      infoWindow.open(_this.googleMap, marker);
     });
   };
 
