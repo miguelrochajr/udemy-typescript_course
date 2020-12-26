@@ -15,14 +15,14 @@ let myNumbers: number[] = [1, 2, 3];
 let truths: boolean[] = [true, true, false];
 
 // Classes with type annotations
-class Car {
+class CarSmall {
   wheels: number;
 
   constructor(wheels: number) {
     this.wheels = wheels;
   }
 }
-let car: Car = new Car(4);
+let carSmall: CarSmall = new CarSmall(4);
 
 // Object literal. This is useful but you could make an interface
 let point: { x: number; y: number } = {
