@@ -117,7 +117,99 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/models/Model.ts":[function(require,module,exports) {
+})({"src/views/UserForm.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserForm = void 0; // this is a view class
+
+var UserForm =
+/** @class */
+function () {
+  function UserForm(parent, model) {
+    var _this = this;
+
+    this.parent = parent;
+    this.model = model;
+
+    this.bindModel = function () {
+      _this.model.on('change', function () {
+        _this.render();
+      });
+    };
+
+    this.onDragDiv = function () {
+      console.log('HEEELLLW');
+    };
+
+    this.onSetAgeClick = function () {
+      _this.model.setRandomAge();
+    };
+
+    this.onButtonClick = function () {
+      console.log('Button clicked');
+    };
+
+    this.onHeaderHover = function () {
+      console.log('Mouse has entered the h1 part');
+    };
+
+    this.bindModel();
+  }
+
+  UserForm.prototype.eventsMap = function () {
+    return {
+      'click:button': this.onButtonClick,
+      'mouseenter:h1': this.onHeaderHover,
+      'click:.set-age': this.onSetAgeClick
+    };
+  };
+
+  UserForm.prototype.template = function () {
+    return "\n      <div>\n        <h1>User Form!</h1>\n        <div>User name: " + this.model.get('name') + "</div>\n        <div>User age: " + this.model.get('age') + "</div>\n        <input />\n        <button>Click here!</button>\n        <button class=\"set-age\">Set random age!</button>\n      </div>\n    ";
+  };
+  /* fragment is a reference to an HTML element to be inserted into the DOM
+  at this point in time, the element is just a string, like our template*/
+
+
+  UserForm.prototype.bindEvents = function (fragment) {
+    var eventsMap = this.eventsMap();
+
+    var _loop_1 = function _loop_1(eventKey) {
+      // deconstructor. Ex: click:button
+      var _a = eventKey.split(':'),
+          eventName = _a[0],
+          eventSelector = _a[1];
+
+      fragment.querySelectorAll(eventSelector).forEach(function (element) {
+        element.addEventListener(eventName, eventsMap[eventKey]);
+      });
+    };
+
+    for (var eventKey in eventsMap) {
+      _loop_1(eventKey);
+    }
+  };
+
+  UserForm.prototype.render = function () {
+    // clear the HTML in the screen
+    if (this.parent) this.parent.innerHTML = '';
+    var templateElement = document.createElement('template');
+    templateElement.innerHTML = this.template();
+    this.bindEvents(templateElement.content);
+
+    if (this.parent != null) {
+      this.parent.append(templateElement.content);
+    }
+  };
+
+  return UserForm;
+}();
+
+exports.UserForm = UserForm;
+},{}],"src/models/Model.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2227,6 +2319,13 @@ function (_super) {
     });
   };
 
+  User.prototype.setRandomAge = function () {
+    var age = Math.round(Math.random() * 100);
+    this.set({
+      age: age
+    });
+  };
+
   return User;
 }(Model_1.Model);
 
@@ -2238,14 +2337,18 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var UserForm_1 = require("./views/UserForm");
+
 var User_1 = require("./models/User");
 
-var collection = User_1.User.buildUserCollection();
-collection.on('change', function () {
-  console.log(collection);
+var rootElement = document.getElementById('root');
+var user = User_1.User.buildUser({
+  name: 'Miguel',
+  age: 27
 });
-collection.fetch();
-},{"./models/User":"src/models/User.ts"}],"../../../../../.nvm/versions/node/v12.16.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var userForm = new UserForm_1.UserForm(rootElement, user);
+userForm.render();
+},{"./views/UserForm":"src/views/UserForm.ts","./models/User":"src/models/User.ts"}],"../../../../../.nvm/versions/node/v12.16.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

@@ -2,19 +2,9 @@ import { AxiosPromise, AxiosResponse } from 'axios';
 import { Attributes } from './Attributes';
 import { Eventing } from './Eventing';
 
-interface ModelAttributes<T> {
-  set: (update: T) => void;
-  get: <K extends keyof T>(key: K) => T[K];
-}
-
 interface Sync<T> {
   fetch(id: number): AxiosPromise;
   save(id: T): AxiosPromise;
-}
-
-interface Events {
-  on: (eventName: string, callback: () => void) => void;
-  trigger: (eventName: string) => void;
 }
 
 interface HasId {
@@ -23,8 +13,8 @@ interface HasId {
 
 export class Model<T extends HasId> {
   constructor(
-    private attributes: ModelAttributes<T>,
-    private events: Events,
+    private attributes: Attributes<T>,
+    private events: Eventing,
     private sync: Sync<T>
   ) {}
 
