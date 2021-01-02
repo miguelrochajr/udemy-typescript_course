@@ -14,6 +14,21 @@
       "name": "Miguel Rocha",
       "age": 27,
       "id": 3
+    },
+    {
+      "name": "Miguel",
+      "age": 27,
+      "id": 4
+    },
+    {
+      "name": "NEW USER",
+      "age": 31,
+      "id": 5
+    },
+    {
+      "name": "Miguel Rocha Jr.",
+      "age": 20,
+      "id": 6
     }
   ]
 }

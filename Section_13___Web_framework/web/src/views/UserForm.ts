@@ -1,31 +1,35 @@
-import { User } from '../models/User';
+import { User, UserProps } from '../models/User';
+import { View } from './View';
 
 // this is a view class
-export class UserForm {
-  constructor(public parent: Element | null, public model: User) {
-    this.bindModel();
-  }
-
-  bindModel = (): void => {
-    this.model.on('change', () => {
-      this.render();
-    });
-  };
-
+export class UserForm extends View<User, UserProps> {
   onDragDiv = (): void => {
     console.log('HEEELLLW');
   };
 
   eventsMap(): { [key: string]: () => void } {
     return {
-      'click:button': this.onButtonClick,
       'mouseenter:h1': this.onHeaderHover,
       'click:.set-age': this.onSetAgeClick,
+      'click:.set-name': this.onSetNameClick,
+      'click:.save-model': this.onSaveModelClick,
     };
   }
 
   onSetAgeClick = (): void => {
     this.model.setRandomAge();
+  };
+
+  onSaveModelClick = (): void => {
+    this.model.save();
+  };
+
+  onSetNameClick = (): void => {
+    const input = this.parent?.querySelector('input');
+    if (input) {
+      const name = input?.value;
+      this.model.set({ name });
+    }
   };
 
   onButtonClick = (): void => {
@@ -39,40 +43,11 @@ export class UserForm {
   template(): string {
     return `
       <div>
-        <h1>User Form!</h1>
-        <div>User name: ${this.model.get('name')}</div>
-        <div>User age: ${this.model.get('age')}</div>
-        <input />
-        <button>Click here!</button>
+        <input class="name" placeholder="${this.model.get('name')}"/>
+        <button class="set-name">Change Name</button>
         <button class="set-age">Set random age!</button>
+        <button class="save-model">Save User</button>
       </div>
     `;
-  }
-
-  /* fragment is a reference to an HTML element to be inserted into the DOM
-  at this point in time, the element is just a string, like our template*/
-  bindEvents(fragment: DocumentFragment): void {
-    const eventsMap = this.eventsMap();
-
-    for (let eventKey in eventsMap) {
-      // deconstructor. Ex: click:button
-      const [eventName, eventSelector] = eventKey.split(':');
-      fragment.querySelectorAll(eventSelector).forEach((element) => {
-        element.addEventListener(eventName, eventsMap[eventKey]);
-      });
-    }
-  }
-
-  render(): void {
-    // clear the HTML in the screen
-    if (this.parent) this.parent.innerHTML = '';
-
-    const templateElement = document.createElement('template');
-    templateElement.innerHTML = this.template();
-
-    this.bindEvents(templateElement.content);
-    if (this.parent != null) {
-      this.parent.append(templateElement.content);
-    }
   }
 }

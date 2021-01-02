@@ -117,99 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/views/UserForm.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.UserForm = void 0; // this is a view class
-
-var UserForm =
-/** @class */
-function () {
-  function UserForm(parent, model) {
-    var _this = this;
-
-    this.parent = parent;
-    this.model = model;
-
-    this.bindModel = function () {
-      _this.model.on('change', function () {
-        _this.render();
-      });
-    };
-
-    this.onDragDiv = function () {
-      console.log('HEEELLLW');
-    };
-
-    this.onSetAgeClick = function () {
-      _this.model.setRandomAge();
-    };
-
-    this.onButtonClick = function () {
-      console.log('Button clicked');
-    };
-
-    this.onHeaderHover = function () {
-      console.log('Mouse has entered the h1 part');
-    };
-
-    this.bindModel();
-  }
-
-  UserForm.prototype.eventsMap = function () {
-    return {
-      'click:button': this.onButtonClick,
-      'mouseenter:h1': this.onHeaderHover,
-      'click:.set-age': this.onSetAgeClick
-    };
-  };
-
-  UserForm.prototype.template = function () {
-    return "\n      <div>\n        <h1>User Form!</h1>\n        <div>User name: " + this.model.get('name') + "</div>\n        <div>User age: " + this.model.get('age') + "</div>\n        <input />\n        <button>Click here!</button>\n        <button class=\"set-age\">Set random age!</button>\n      </div>\n    ";
-  };
-  /* fragment is a reference to an HTML element to be inserted into the DOM
-  at this point in time, the element is just a string, like our template*/
-
-
-  UserForm.prototype.bindEvents = function (fragment) {
-    var eventsMap = this.eventsMap();
-
-    var _loop_1 = function _loop_1(eventKey) {
-      // deconstructor. Ex: click:button
-      var _a = eventKey.split(':'),
-          eventName = _a[0],
-          eventSelector = _a[1];
-
-      fragment.querySelectorAll(eventSelector).forEach(function (element) {
-        element.addEventListener(eventName, eventsMap[eventKey]);
-      });
-    };
-
-    for (var eventKey in eventsMap) {
-      _loop_1(eventKey);
-    }
-  };
-
-  UserForm.prototype.render = function () {
-    // clear the HTML in the screen
-    if (this.parent) this.parent.innerHTML = '';
-    var templateElement = document.createElement('template');
-    templateElement.innerHTML = this.template();
-    this.bindEvents(templateElement.content);
-
-    if (this.parent != null) {
-      this.parent.append(templateElement.content);
-    }
-  };
-
-  return UserForm;
-}();
-
-exports.UserForm = UserForm;
-},{}],"src/models/Model.ts":[function(require,module,exports) {
+})({"src/models/Model.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2330,25 +2238,265 @@ function (_super) {
 }(Model_1.Model);
 
 exports.User = User;
-},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./ApiSync":"src/models/ApiSync.ts","./Eventing":"src/models/Eventing.ts","./Collection":"src/models/Collection.ts"}],"src/index.ts":[function(require,module,exports) {
+},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./ApiSync":"src/models/ApiSync.ts","./Eventing":"src/models/Eventing.ts","./Collection":"src/models/Collection.ts"}],"src/views/CollectionView.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CollectionView = void 0;
+
+var CollectionView =
+/** @class */
+function () {
+  function CollectionView(parent, collection) {
+    this.parent = parent;
+    this.collection = collection;
+  }
+
+  CollectionView.prototype.render = function () {
+    this.parent.innerHTML = '';
+    var templateElement = document.createElement('template');
+
+    for (var _i = 0, _a = this.collection.models; _i < _a.length; _i++) {
+      var model = _a[_i];
+      var itemParent = document.createElement('div');
+      this.renderItem(model, itemParent);
+      templateElement.content.append(itemParent);
+    }
+
+    this.parent.append(templateElement.content);
+  };
+
+  return CollectionView;
+}();
+
+exports.CollectionView = CollectionView;
+},{}],"src/views/View.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.View = void 0;
+
+var View =
+/** @class */
+function () {
+  function View(parent, model) {
+    var _this = this;
+
+    this.parent = parent;
+    this.model = model;
+    this.regions = {};
+    /* fragment is a reference to an HTML element to be inserted into the DOM
+    at this point in time, the element is just a string, like our template*/
+
+    this.bindEvents = function (fragment) {
+      var eventsMap = _this.eventsMap();
+
+      var _loop_1 = function _loop_1(eventKey) {
+        // deconstructor. Ex: click:button
+        var _a = eventKey.split(':'),
+            eventName = _a[0],
+            eventSelector = _a[1];
+
+        fragment.querySelectorAll(eventSelector).forEach(function (element) {
+          element.addEventListener(eventName, eventsMap[eventKey]);
+        });
+      };
+
+      for (var eventKey in eventsMap) {
+        _loop_1(eventKey);
+      }
+    };
+
+    this.mapRegions = function (fragment) {
+      var regionsMap = _this.regionsMap();
+
+      for (var key in regionsMap) {
+        var selector = regionsMap[key];
+        var element = fragment.querySelector(selector);
+
+        if (element) {
+          _this.regions[key] = element;
+        }
+      }
+    };
+
+    this.onRender = function () {};
+
+    this.bindModel();
+  }
+
+  View.prototype.regionsMap = function () {
+    return {};
+  };
+
+  View.prototype.eventsMap = function () {
+    return {};
+  };
+
+  View.prototype.bindModel = function () {
+    var _this = this;
+
+    this.model.on('change', function () {
+      _this.render();
+    });
+  };
+
+  View.prototype.render = function () {
+    // clear the HTML in the screen
+    if (this.parent) this.parent.innerHTML = '';
+    var templateElement = document.createElement('template');
+    templateElement.innerHTML = this.template();
+    this.bindEvents(templateElement.content);
+    this.mapRegions(templateElement.content);
+    this.onRender();
+
+    if (this.parent !== null) {
+      this.parent.append(templateElement.content);
+    }
+  };
+
+  return View;
+}();
+
+exports.View = View;
+},{}],"src/views/UserShow.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserShow = void 0;
+
+var View_1 = require("./View");
+
+var UserShow =
+/** @class */
+function (_super) {
+  __extends(UserShow, _super);
+
+  function UserShow() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserShow.prototype.template = function () {
+    return "\n      <div>\n        <h1>User Form!</h1>\n        <div>User name: " + this.model.get('name') + "</div>\n        <div>User age: " + this.model.get('age') + "</div>\n      </div>\n    ";
+  };
+
+  return UserShow;
+}(View_1.View);
+
+exports.UserShow = UserShow;
+},{"./View":"src/views/View.ts"}],"src/views/UserList.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserList = void 0;
+
+var CollectionView_1 = require("./CollectionView");
+
+var UserShow_1 = require("./UserShow");
+
+var UserList =
+/** @class */
+function (_super) {
+  __extends(UserList, _super);
+
+  function UserList() {
+    return _super !== null && _super.apply(this, arguments) || this;
+  }
+
+  UserList.prototype.renderItem = function (model, itemParent) {
+    new UserShow_1.UserShow(itemParent, model).render();
+  };
+
+  return UserList;
+}(CollectionView_1.CollectionView);
+
+exports.UserList = UserList;
+},{"./CollectionView":"src/views/CollectionView.ts","./UserShow":"src/views/UserShow.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var UserForm_1 = require("./views/UserForm");
-
 var User_1 = require("./models/User");
 
-var rootElement = document.getElementById('root');
-var user = User_1.User.buildUser({
-  name: 'Miguel',
-  age: 27
+var UserList_1 = require("./views/UserList");
+
+var Collection_1 = require("./models/Collection");
+
+var rootUrl = 'http://localhost:3000/users';
+var users = new Collection_1.Collection(rootUrl, function (json) {
+  return User_1.User.buildUser(json);
 });
-var userForm = new UserForm_1.UserForm(rootElement, user);
-userForm.render();
-},{"./views/UserForm":"src/views/UserForm.ts","./models/User":"src/models/User.ts"}],"../../../../../.nvm/versions/node/v12.16.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+users.on('change', function () {
+  var root = document.getElementById('root');
+
+  if (root) {
+    new UserList_1.UserList(root, users).render();
+  }
+});
+users.fetch();
+},{"./models/User":"src/models/User.ts","./views/UserList":"src/views/UserList.ts","./models/Collection":"src/models/Collection.ts"}],"../../../../../.nvm/versions/node/v12.16.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2376,7 +2524,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52685" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50701" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
