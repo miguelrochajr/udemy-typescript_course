@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+// import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Todo, fetchTodos } from '../redux/actions';
 import { StoreState } from '../redux/reducers';
@@ -9,22 +9,22 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
-  const [counter, setCounter] = useState(0);
-
-  const onIncrement = (): void => {
-    setCounter(counter + 1);
+  const onFetchButtonClicked = (): void => {
+    props.fetchTodos();
   };
 
-  const onDecrement = (): void => {
-    setCounter(counter - 1);
+  const renderList = (): JSX.Element[] => {
+    return props.todos.map((todo: Todo) => {
+      return <div key={todo.id}>{todo.title}</div>;
+    });
   };
 
   const render = () => {
+    console.log(props.todos);
     return (
       <div>
-        <button onClick={onIncrement}>Increment</button>
-        <button onClick={onDecrement}>Decrement</button>
-        <h3>{counter}</h3>
+        <button onClick={onFetchButtonClicked}>Fetch Todos</button>
+        {renderList()}
       </div>
     );
   };
